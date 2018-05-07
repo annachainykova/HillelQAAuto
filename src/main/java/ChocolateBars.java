@@ -1,7 +1,10 @@
 public class ChocolateBars {
     public static void main(String[] args) {
-        System.out.println(chocolateBars(15, 1, 3));
+        System.out.println(chocolateBars(22, 2, 5));
+        System.out.println(countChoc(22, 2, 5));
     }
+
+    //Anna's implementation
     public static int chocolateBars(int money, int price, int wraps){
         int allWraps = money/price; //how many wraps we have by buying all bars for money
         int bars = money/price; //how many bars we bought for money
@@ -13,4 +16,16 @@ public class ChocolateBars {
 
         return bars;
     }
+
+    //Leonid's implementation
+    public static int countChoc(int cash, int price, int wraps){
+        int choc = cash/price; //count of choc that could be purchase by cash
+        int allWraps = cash/price; //count of wraps, that could be purchase by cash
+        for (int i = allWraps; i >=wraps+1 ; i-=wraps) {
+            choc ++;
+            allWraps-=wraps;
+        }
+        return choc;
+    }
+
 }
