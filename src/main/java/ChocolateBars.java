@@ -2,6 +2,7 @@ public class ChocolateBars {
     public static void main(String[] args) {
         System.out.println(chocolateBars(15, 2, 2));
         System.out.println(countChoc(15, 2, 2));
+        System.out.println(countBars(15, 2, 2));
     }
 
     //Anna's implementation
@@ -26,6 +27,12 @@ public class ChocolateBars {
             allWraps-=wraps-1;
         }
         return choc;
+    }
+
+    //Robert's implementation
+    public static int countBars (int m, int p, int w) {
+        int c = m/p;
+        return c + (c-1)/(w-1);
     }
 
 }
