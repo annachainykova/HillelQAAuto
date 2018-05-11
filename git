@@ -1,3 +1,22 @@
 git init / git clone link
 git show - содержимое коммита
 git diff
+git log
+gitk
+
+git checkout
+git branch
+
+git diff master(между текущей веткой и мастером)
+
+git checkout master - go to maset
+
+git merge branchName - merge current branch with branchName
+
+git fetch
+
+git stash
+
+git stash apply
+
+git blame nameOfFile
