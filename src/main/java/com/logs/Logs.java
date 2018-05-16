@@ -1,73 +1,34 @@
 package com.logs;
 
+
+
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Logs {
     public static void main(String[] args) throws IOException {
-            //logsToLogs("LogsToTest");
-            fromFileOnlyLogsWithTIme(logsToLogs("LogsToTest"));
-        //regex();
+
+        writeMapIntoFile(fromFileOnlyLogsWithTIme(getOnlyLinesWithTransactions(getListOfFilesInFolder("E:\\Anna\\Logs"))));
 
     }
 
 
+        public static File[] getListOfFilesInFolder (String folderPath) throws IOException {
+            File folder = new File(folderPath);
+            return folder.listFiles();
+        }
 
 
 
+        public static List<String> getOnlyLinesWithTransactions (File[] listOfFiles) throws IOException {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public static String logsToLogs (String path) throws IOException { File folder = new File(path);
-        File[] listOfFiles = folder.listFiles();
-
-        List<String> newLines = new ArrayList();
-
-        String currentTime = LocalDateTime.now().toString().replace(':', '-');
-
-        String pathofNew = "newfile" + currentTime + ".txt";
-        Path fileToWrite = Paths.get(pathofNew);
+        List <String> linesWithTransactionsID = new ArrayList();
 
         for (File file : listOfFiles) {
             String fileName = file.getPath();
@@ -78,19 +39,18 @@ public class Logs {
                 Pattern p = Pattern.compile("(\\s){2}(\\w)*(-)*(\\w)+-(\\d)+");
                 Matcher m = p.matcher(lines.get(i));
                 if (m.find()) {
-                    newLines.add(lines.get(i));
+                    linesWithTransactionsID.add(lines.get(i));
                 }
             }
 
-            Files.write(fileToWrite, newLines);
-
         }
-        return pathofNew;
+        return linesWithTransactionsID;
     }
 
-    public static void fromFileOnlyLogsWithTIme(String pathOfNew) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(pathOfNew));
-        for (String line : lines) {
+    public static TreeMap<String, String> fromFileOnlyLogsWithTIme(List<String> linesWithTransactionsID) throws IOException {
+
+        HashMap <String, String> timeAndTransactions = new HashMap<>();
+        for (String line : linesWithTransactionsID) {
             String[] parts = line.split(":  ");
             String part1 = parts[0];
             String part2 = parts[1];
@@ -99,25 +59,29 @@ public class Logs {
             Matcher m = p.matcher(part1);
             m.find();
            String timeOnly = m.group(1);
+           if(timeAndTransactions.containsKey(timeOnly)) {
+                part2 = timeAndTransactions.get(timeOnly) + "," + part2;
+            }
+            timeAndTransactions.put(timeOnly, part2);
+        }
+        return new TreeMap<>(timeAndTransactions);
 
-            System.out.println(timeOnly);
-            System.out.println(part2);
+
+
+    }
+
+
+    public static void writeMapIntoFile(TreeMap<String, String> treeMap) throws IOException {
+        String currentTime = LocalDateTime.now().toString().replace(':', '-');
+
+        PrintWriter out = new PrintWriter("logsUpdated" + currentTime + ".txt");
+
+        Set<Map.Entry<String, String>> hashSet=treeMap.entrySet();
+        for(Map.Entry<String, String> entry:hashSet ) {
+
+            out.println(entry.getKey() + " :");
+            out.println(entry.getValue());
         }
     }
-
-
-    public static void regex() {
-        String str = "Feb  4 00:07:18 gw1-ca-ca1 transaction0";
-        Pattern p = Pattern.compile("([a-zA-z]*\\s*\\d\\s\\d*:\\d*:\\d*)(\\s*(\\w*-)*\\w*\\s*\\w*)");
-        Matcher m = p.matcher("Feb  4 00:07:18 gw1-ca-ca1 transaction0");
-        System.out.println(str);
-        System.out.println(m.find());
-        String re = m.group(1);
-        System.out.println(re);
-
-    }
-
-
-
 
 }
