@@ -115,7 +115,7 @@ public class LogsNew {
      * @param timeAndTransactions
      * @throws IOException
      */
-    public static void writeMapIntoFile(HashMap <String, TreeMap <String, Integer>> timeAndTransactions) throws FileNotFoundException {
+    public static void writeMapIntoFile(TreeMap <String, TreeMap <String, Integer>> timeAndTransactions) throws FileNotFoundException {
         String currentTime = LocalDateTime.now().toString().replace(':', '-'); //to make specific name of File
 
         PrintWriter out = new PrintWriter("logsUpdated" + currentTime + ".txt");
@@ -133,13 +133,16 @@ public class LogsNew {
         TreeMap <String, String> weeksAndTransactions= new TreeMap<>();
         String myString = "";
         List<String> allString = new ArrayList<>();
-        for (LocalDate key : timeAndTransactions.keySet()) {
-            if(key.isBefore(firstDayEver.plusWeeks(2))) {
-
-                        myString = myString + "," + (timeAndTransactions.get(key));
+        LocalDate currentDate = firstDayEver;
+        while(currentDate.isBefore(timeAndTransactions.lastKey().plusDays(1))) {
+            while(currentDate.isBefore(firstDayEver.plusWeeks(2))) {
+            if(timeAndTransactions.containsKey(currentDate)) {
+                myString = myString + "," + (timeAndTransactions.get(currentDate));
 
             }
-            weeksAndTransactions.put(key + " - " + firstDayEver.plusWeeks(2).minusDays(1), myString);
+                currentDate = currentDate.plusDays(1);
+            }
+            weeksAndTransactions.put(firstDayEver + " - " + firstDayEver.plusWeeks(2).minusDays(1), myString);
             allString.add(myString);
             myString = "";
             firstDayEver = firstDayEver.plusWeeks(2);
@@ -148,8 +151,8 @@ public class LogsNew {
 
     }
 
-    public static HashMap<String, TreeMap<String, Integer>> howManyTimesPerWeek(TreeMap<String, String> weeksAndTransactions) {
-        HashMap<String, TreeMap<String, Integer>> finish = new HashMap<>();
+    public static TreeMap<String, TreeMap<String, Integer>> howManyTimesPerWeek(TreeMap<String, String> weeksAndTransactions) {
+        TreeMap<String, TreeMap<String, Integer>> finish = new TreeMap<>();
         for (String key : weeksAndTransactions.keySet()) {
             String one = weeksAndTransactions.get(key);
             List<String> lists = new ArrayList<>(Arrays.asList(one.split(",")));
