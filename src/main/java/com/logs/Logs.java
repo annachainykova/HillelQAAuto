@@ -14,69 +14,90 @@ import java.util.regex.Pattern;
 public class Logs {
     public static void main(String[] args) throws IOException {
 
-        writeMapIntoFile(fromFileOnlyLogsWithTIme(getOnlyLinesWithTransactions(getListOfFilesInFolder("E:\\Anna\\Logs"))));
+        writeMapIntoFile(transactionsOfTime(getOnlyLinesWithTransactions(getListOfFilesInFolder("E:\\Anna\\Logs"))));
 
     }
 
+    /**
+     *
+     * @param folderPath path to the folder, which contains only logs files
+     * @return list of files in folder as File Array
+     * @throws IOException
+     */
+    public static File[] getListOfFilesInFolder (String folderPath) throws IOException {
+        File folder = new File(folderPath);
+        return folder.listFiles();
+    }
 
-        public static File[] getListOfFilesInFolder (String folderPath) throws IOException {
-            File folder = new File(folderPath);
-            return folder.listFiles();
-        }
 
-
-
-        public static List<String> getOnlyLinesWithTransactions (File[] listOfFiles) throws IOException {
-
+    /**
+     *
+     * @param listOfFiles Array of Files, that will be read and checked for specific Strings (march pattern)
+     * @return List of String, each String must 'match' the specific pattern
+     * @throws IOException
+     */
+    public static List<String> getOnlyLinesWithTransactions (File[] listOfFiles) throws IOException {
         List <String> linesWithTransactionsID = new ArrayList();
 
         for (File file : listOfFiles) {
-            String fileName = file.getPath();
+            List<String> lines = Files.readAllLines(Paths.get(file.getPath()));
 
-            List<String> lines = Files.readAllLines(Paths.get(fileName));
-
-            for (int i = 0; i < lines.size(); i++) {
+            for (String line : lines) {
                 Pattern p = Pattern.compile("(\\s){2}(\\w)*(-)*(\\w)+-(\\d)+");
-                Matcher m = p.matcher(lines.get(i));
+                Matcher m = p.matcher(line);
                 if (m.find()) {
-                    linesWithTransactionsID.add(lines.get(i));
+                    linesWithTransactionsID.add(line);
                 }
             }
-
         }
         return linesWithTransactionsID;
     }
 
-    public static TreeMap<String, String> fromFileOnlyLogsWithTIme(List<String> linesWithTransactionsID) throws IOException {
+    /**
+     *
+     * @param linesWithTransactionsID
+     * Divide lines two DateTime, ServerName and Transactions IDs and save DateTime and Transactions IDs into treeMap
+     * @return treeMap which contains time as a key and all transactions for this time as a value
+     */
+    public static TreeMap<String, String> transactionsOfTime (List<String> linesWithTransactionsID) {
 
         HashMap <String, String> timeAndTransactions = new HashMap<>();
         for (String line : linesWithTransactionsID) {
-            String[] parts = line.split(":  ");
-            String part1 = parts[0];
-            String part2 = parts[1];
 
-            Pattern p = Pattern.compile("([a-zA-z]*\\s*\\d\\s\\d*:\\d*:\\d*)(\\s*(\\w*-)*\\w*\\s*\\w*)");
-            Matcher m = p.matcher(part1);
+            // Spliting each line of list by regex for getting two parts:
+            // part1 = DateTime with ServerName;
+            // part2 = transactionsIDs only
+            String[] parts = line.split(":  ");
+            String timeWithServername = parts[0];
+            String transactionsIDs = parts[1];
+
+            Pattern p = Pattern.compile("([a-zA-z]*\\s*\\d\\s\\d*:\\d*:\\d*)(\\s*(\\w*-)*\\w*\\s*\\w*)"); //regex to check DateTime and ServerName
+            Matcher m = p.matcher(timeWithServername);
             m.find();
-           String timeOnly = m.group(1);
-           if(timeAndTransactions.containsKey(timeOnly)) {
-                part2 = timeAndTransactions.get(timeOnly) + "," + part2;
+
+            String time = m.group(1); // saving only DateTime
+            String serverName = m.group(2);
+
+            //adding values to hashmap with unique key, concat value if needed
+            if(timeAndTransactions.containsKey(time)) {
+                transactionsIDs = timeAndTransactions.get(time) + "," + transactionsIDs;
             }
-            timeAndTransactions.put(timeOnly, part2);
+            timeAndTransactions.put(time, transactionsIDs);
         }
         return new TreeMap<>(timeAndTransactions);
-
-
-
     }
 
-
-    public static void writeMapIntoFile(TreeMap<String, String> treeMap) throws IOException {
-        String currentTime = LocalDateTime.now().toString().replace(':', '-');
+    /**
+     * Write Map into File with specific
+     * @param timeAndTransactions
+     * @throws IOException
+     */
+    public static void writeMapIntoFile(TreeMap<String, String> timeAndTransactions) throws FileNotFoundException {
+        String currentTime = LocalDateTime.now().toString().replace(':', '-'); //to make specific name of File
 
         PrintWriter out = new PrintWriter("logsUpdated" + currentTime + ".txt");
 
-        Set<Map.Entry<String, String>> hashSet=treeMap.entrySet();
+        Set<Map.Entry<String, String>> hashSet=timeAndTransactions.entrySet();
         for(Map.Entry<String, String> entry:hashSet ) {
 
             out.println(entry.getKey() + " :");
