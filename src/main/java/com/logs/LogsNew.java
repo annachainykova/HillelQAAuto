@@ -17,21 +17,16 @@ import java.util.regex.Pattern;
 
 
 
-// To Do
-// Improve all methods
-// Add comments
-
-
-
 public class LogsNew {
     public static void main(String[] args) throws IOException, ParseException {
         writeMapIntoFile(
-                howManyTimesPerPeriode(
+                howManyTimesPerPeriod(
                         uniteTransactionsOfSpecificPeriod(
                                 combineTransactionsOfDay(
                                         getOnlyLinesWithTransactions(
                                                 getAllLinesFromFiles(
                                                     getListOfFilesInFolder("E:\\Anna\\Logs")))), 14)));
+
     }
 
     /**
@@ -49,7 +44,7 @@ public class LogsNew {
     /**
      *
      * @param listOfFiles Array of Files
-     * @return ArrayList which consists of all lines from each files
+     * @return ArrayList which consists of all lines from each file
      * @throws IOException
      */
     public static List <String> getAllLinesFromFiles (File[] listOfFiles) throws IOException {
@@ -75,7 +70,8 @@ public class LogsNew {
     public static List <String> getOnlyLinesWithTransactions (List <String> allLinesFromFiles)  {
         List <String> linesWithTransactionsID = new ArrayList();
             for (String line : allLinesFromFiles) {
-                Pattern p = Pattern.compile("(\\s){2}(\\w)*(-)*(\\w)+-(\\d)+"); //this pattern checks sequence that must match TranscationsID
+                //this pattern checks sequence that must match TranscationsID
+                Pattern p = Pattern.compile("(\\s){2}(\\w)*(-)*(\\w)+-(\\d)+");
                 Matcher m = p.matcher(line);
                 if (m.find()) {
                     linesWithTransactionsID.add(line);
@@ -105,8 +101,9 @@ public class LogsNew {
             String timeWithServerName = parts[0];
             String transactionsIDs = parts[1];
 
-
-            Pattern p = Pattern.compile("([a-zA-z]{3}\\s{2}\\d{1,2})(\\s{1}\\d{2}:\\d{2}:\\d{2})(\\s*(\\w*-)*\\w*\\s*\\w*)"); //regex to check DateTime and ServerName
+            //regex to check DateTime and ServerName
+            String regex = "([a-zA-z]{3}\\s{2}\\d{1,2})(\\s{1}\\d{2}:\\d{2}:\\d{2})(\\s*(\\w*-)*\\w*\\s*\\w*)";
+            Pattern p = Pattern.compile(regex);
             Matcher m = p.matcher(timeWithServerName);
             m.find();
 
@@ -125,16 +122,23 @@ public class LogsNew {
         return new TreeMap<>(timeAndTransactions);
     }
 
+    /**
+     *
+     * @param timeAndTransactions - treeMap which contains all logs for every day. Where key is a LocalDate
+     *                              and value is a String of all logs per that day
+     * @param periodInDays - for how many days one period lasts
+     * @return treeMap which consists of name of period as a key(String) and all logs for this period as a value(String)
+     */
+    public static TreeMap <String, String> uniteTransactionsOfSpecificPeriod(
+                                                TreeMap <LocalDate, String> timeAndTransactions, int periodInDays) {
+        LocalDate firstDateOfPeriod = timeAndTransactions.firstKey();
+        LocalDate lastDateOfPeriod = firstDateOfPeriod.plusDays(periodInDays);
 
-    public static TreeMap <String, String> uniteTransactionsOfSpecificPeriod(TreeMap <LocalDate, String> timeAndTransactions, int periodInDays) {
-        LocalDate firstDayOfAllLogs = timeAndTransactions.firstKey();
-        LocalDate firstDayOfPeriod = firstDayOfAllLogs;
-        LocalDate lastDateOfPeriod = firstDayOfAllLogs.plusDays(periodInDays);
         TreeMap <String, String> transactionsForSpecificPeriod= new TreeMap<>();
 
         String logsOfPeriod = "";
-        List<String> allString = new ArrayList<>();
-        LocalDate currentDate = firstDayOfAllLogs;
+
+        LocalDate currentDate = timeAndTransactions.firstKey();
 
         while(currentDate.isBefore(timeAndTransactions.lastKey().plusDays(1))) {
             while(currentDate.isBefore(lastDateOfPeriod) && currentDate.isBefore(timeAndTransactions.lastKey().plusDays(1))) {
@@ -147,45 +151,55 @@ public class LogsNew {
                 }
                 currentDate = currentDate.plusDays(1);
             }
-            transactionsForSpecificPeriod.put(firstDayOfPeriod + " - " + lastDateOfPeriod.minusDays(1), logsOfPeriod);
-            allString.add(logsOfPeriod);
+            transactionsForSpecificPeriod.put(firstDateOfPeriod + " - " + lastDateOfPeriod.minusDays(1), logsOfPeriod);
             logsOfPeriod = "";
-            firstDayOfPeriod = firstDayOfPeriod.plusDays(periodInDays);
+            firstDateOfPeriod = firstDateOfPeriod.plusDays(periodInDays);
             lastDateOfPeriod = lastDateOfPeriod.plusDays(periodInDays);
         }
         return transactionsForSpecificPeriod;
-
     }
 
-    public static TreeMap <String, String> howManyTimesPerPeriode(TreeMap <String, String> weeksAndTransactions) {
-        TreeMap <String, String> finish = new TreeMap<>();
-        for (String key : weeksAndTransactions.keySet()) {
-            String one = weeksAndTransactions.get(key);
-            String valuePlusOccurence = null;
-            String all = null;
-            if(one.length() == 0) {
-                one = "There is no transactions for this periode";
-                all = one;
+
+    /**
+     *
+     * @param transactionsForSpecificPeriod treeMap which consists of name of period as a key(String)
+     *                            and all logs for this period as a value(String)
+     * @return treeMap which consists of name of period as a key(String)
+     *                            and every unique logs for this period with occurrences per period as a value(String)
+     *                            if there is no transactions per period will return text
+     *                            "There is no transactions for this period" as a value
+     */
+
+    public static TreeMap <String, String> howManyTimesPerPeriod(TreeMap <String, String> transactionsForSpecificPeriod) {
+        TreeMap <String, String> transactionsForSpecificPeriodWithOccurrences = new TreeMap<>();
+        String valuePlusOccurrence;
+        String allValuePlusOccurrencePerPeriod;
+        for (String period : transactionsForSpecificPeriod.keySet()) {
+            String logsOfPeriod = transactionsForSpecificPeriod.get(period);
+            if(logsOfPeriod.length() == 0) {
+                logsOfPeriod = "There is no transactions for this period";
+                allValuePlusOccurrencePerPeriod = logsOfPeriod;
             } else {
-                ArrayList<String> lists = new ArrayList<>(Arrays.asList(one.split(",")));
-                TreeMap<String, Integer> occurenceOfEach = new TreeMap<>();
+                ArrayList<String> lists = new ArrayList<>(Arrays.asList(logsOfPeriod.split(",")));
+                TreeMap<String, Integer> occurrenceOfEach = new TreeMap<>();
                 for (String list : lists) {
-                    if (occurenceOfEach.containsKey(list)) {
-                        occurenceOfEach.put(list, occurenceOfEach.get(list) + 1);
+                    if (occurrenceOfEach.containsKey(list)) {
+                        occurrenceOfEach.put(list, occurrenceOfEach.get(list) + 1);
                     } else {
-                        occurenceOfEach.put(list, 1);
+                        occurrenceOfEach.put(list, 1);
                     }
                 }
-                ArrayList<String> newArray = new ArrayList<>();
-                for (Map.Entry<String, Integer> entry : occurenceOfEach.entrySet()) {
-                    valuePlusOccurence = entry.getKey() + ": " + entry.getValue();
-                    newArray.add(valuePlusOccurence);
+                ArrayList<String> allValuePlusOccurrencePerPeriodArray = new ArrayList<>();
+                for (Map.Entry<String, Integer> entry : occurrenceOfEach.entrySet()) {
+                    valuePlusOccurrence = entry.getKey() + ": " + entry.getValue();
+                    allValuePlusOccurrencePerPeriodArray.add(valuePlusOccurrence);
                 }
-                all = String.join(", ", newArray);
+                //to cast arraylist into string
+                allValuePlusOccurrencePerPeriod = String.join(", ", allValuePlusOccurrencePerPeriodArray);
             }
-            finish.put(key,  all);
+            transactionsForSpecificPeriodWithOccurrences.put(period,  allValuePlusOccurrencePerPeriod);
         }
-        return finish;
+        return transactionsForSpecificPeriodWithOccurrences;
 
     }
 
@@ -199,8 +213,8 @@ public class LogsNew {
 
         PrintWriter out = new PrintWriter("logsUpdated" + currentTime + ".txt");
 
-        Set<Map.Entry<String, String>> hashSet=timeAndTransactions.entrySet();
-        for(Map.Entry<String, String>  entry:hashSet ) {
+        Set <Map.Entry <String, String>> hashSet = timeAndTransactions.entrySet();
+        for(Map.Entry <String, String>  entry: hashSet ) {
 
             out.println(entry.getKey() + ":");
             out.println(entry.getValue());
