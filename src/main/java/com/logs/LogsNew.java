@@ -25,7 +25,7 @@ public class LogsNew {
                                 combineTransactionsOfDay(
                                         getOnlyLinesWithTransactions(
                                                 getAllLinesFromFiles(
-                                                    getListOfFilesInFolder("E:\\Anna\\Logs")))), 14)));
+                                                    getListOfFilesInFolder("D:\\Anna\\Logs")))), 14)));
 
     }
 
@@ -71,7 +71,7 @@ public class LogsNew {
         List <String> linesWithTransactionsID = new ArrayList();
             for (String line : allLinesFromFiles) {
                 //this pattern checks sequence that must match TranscationsID
-                Pattern p = Pattern.compile("(\\s){2}(\\w)*(-)*(\\w)+-(\\d)+");
+                Pattern p = Pattern.compile("\\s{2}\\w*-*\\w+-\\d+");
                 Matcher m = p.matcher(line);
                 if (m.find()) {
                     linesWithTransactionsID.add(line);
@@ -102,7 +102,7 @@ public class LogsNew {
             String transactionsIDs = parts[1];
 
             //regex to check DateTime and ServerName
-            String regex = "([a-zA-z]{3}\\s{2}\\d{1,2})(\\s{1}\\d{2}:\\d{2}:\\d{2})(\\s*(\\w*-)*\\w*\\s*\\w*)";
+            String regex = "([a-zA-z]{3}\\s{2}\\d{1,2})(\\s{1}\\d{2}:\\d{2}:\\d{2})(\\s*(?:\\w*-)*\\w*\\s*\\w*)";
             Pattern p = Pattern.compile(regex);
             Matcher m = p.matcher(timeWithServerName);
             m.find();

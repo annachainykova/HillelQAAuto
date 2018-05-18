@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public class Logs {
     public static void main(String[] args) throws IOException {
 
-        writeMapIntoFile(transactionsOfTime(getOnlyLinesWithTransactions(getListOfFilesInFolder("E:\\Anna\\Logs"))));
+        writeMapIntoFile(transactionsOfTime(getOnlyLinesWithTransactions(getListOfFilesInFolder("D:\\Anna\\Logs"))));
 
     }
 
@@ -42,7 +42,7 @@ public class Logs {
             List<String> lines = Files.readAllLines(Paths.get(file.getPath()));
 
             for (String line : lines) {
-                Pattern p = Pattern.compile("(\\s){2}(\\w)*(-)*(\\w)+-(\\d)+");
+                Pattern p = Pattern.compile("\\s{2}\\w*-*\\w+-\\d+");
                 Matcher m = p.matcher(line);
                 if (m.find()) {
                     linesWithTransactionsID.add(line);
@@ -70,7 +70,7 @@ public class Logs {
             String timeWithServername = parts[0];
             String transactionsIDs = parts[1];
 
-            Pattern p = Pattern.compile("([a-zA-z]*\\s*\\d\\s\\d*:\\d*:\\d*)(\\s*(\\w*-)*\\w*\\s*\\w*)"); //regex to check DateTime and ServerName
+            Pattern p = Pattern.compile("([a-zA-z]*\\s*\\d\\s\\d*:\\d*:\\d*)(\\s*(?:\\w*-)*\\w*\\s*\\w*)"); //regex to check DateTime and ServerName
             Matcher m = p.matcher(timeWithServername);
             m.find();
 
