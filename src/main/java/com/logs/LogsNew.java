@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 
 
 public class LogsNew {
+
     public static void main(String[] args) throws IOException, ParseException {
         writeMapIntoFile(
                 howManyTimesPerPeriod(
@@ -25,9 +26,11 @@ public class LogsNew {
                                 combineTransactionsOfDay(
                                         getOnlyLinesWithTransactions(
                                                 getAllLinesFromFiles(
-                                                    getListOfFilesInFolder("E:\\Anna\\Logs")))), 14)));
+                                                        getListOfFilesInFolder("E:\\Anna\\Logs")))), 14)));
+
 
     }
+
 
     /**
      *
@@ -39,7 +42,6 @@ public class LogsNew {
         File folder = new File(folderPath);
         return folder.listFiles();
     }
-
 
     /**
      *
@@ -53,12 +55,11 @@ public class LogsNew {
         for (File file : listOfFiles) {
             List<String> linesOfFile = Files.readAllLines(Paths.get(file.getPath()));
             for (String line : linesOfFile) {
-                    linesOfFiles.add(line);
+                linesOfFiles.add(line);
             }
         }
         return linesOfFiles;
     }
-
 
 
     /**
