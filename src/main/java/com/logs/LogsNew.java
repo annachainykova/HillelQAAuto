@@ -62,7 +62,7 @@ public class LogsNew {
     }
 
 
-    
+
     /**
      *
      * @param linesOfFiles
@@ -76,10 +76,8 @@ public class LogsNew {
         for (String line : linesOfFiles) {
             //regex to check DateTime and ServerName
             //where ([a-zA-z]{3}\s{2}\d{1,2}) saves date (Month + Day)
-            // (?:\s{1}\d{2}:\d{2}:\d{2}) doesn't save time
-            // (\s*(?:\w*-)*\w*\s*\w*) doesn't save server name
             // (.*) saves TransactionsID since they go after ':  '
-            String regex = "([a-zA-z]{3}\\s{2}\\d{1,2})(?:\\s{1}\\d{2}:\\d{2}:\\d{2})(?:\\s*(?:\\w*-)*\\w*\\s*\\w*):\\s{2}(.*)";
+            String regex = "([a-zA-z]{3}\\s{2}\\d{1,2})(?:.*):\\s{2}(.*)";
             Pattern p = Pattern.compile(regex);
             Matcher m = p.matcher(line);
             m.find();
