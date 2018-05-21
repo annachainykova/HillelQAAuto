@@ -14,7 +14,9 @@ import java.util.regex.Pattern;
 
 
 
-
+// to DO
+// unite methods getAllLinesWithTransactions with combineTransactionsOfDay
+// delete String[]parts in combineTransactionsOfDay
 
 
 public class LogsNew {
@@ -24,10 +26,8 @@ public class LogsNew {
                 howManyTimesPerPeriod(
                         uniteTransactionsOfSpecificPeriod(
                                 combineTransactionsOfDay(
-                                        getOnlyLinesWithTransactions(
                                                 getAllLinesFromFiles(
-                                                        getListOfFilesInFolder("E:\\Anna\\Logs")))), 14)));
-
+                                                        getListOfFilesInFolder("E:\\Anna\\Logs"))), 14)));
 
     }
 
@@ -62,63 +62,43 @@ public class LogsNew {
     }
 
 
+    
     /**
      *
-     * @param allLinesFromFiles ArrayList of all lines
-     * @return List of String, each String must 'match' the specific pattern
-     * @throws IOException
-     */
-    public static List <String> getOnlyLinesWithTransactions (List <String> allLinesFromFiles)  {
-        List <String> linesWithTransactionsID = new ArrayList();
-            for (String line : allLinesFromFiles) {
-                //this pattern checks sequence that must match TranscationsID
-                Pattern p = Pattern.compile("(\\s){2}(\\w)*(-)*(\\w)+-(\\d)+");
-                Matcher m = p.matcher(line);
-                if (m.find()) {
-                    linesWithTransactionsID.add(line);
-                }
-            }
-        return linesWithTransactionsID;
-    }
-
-
-
-    /**
-     *
-     * @param linesWithTransactionsID
+     * @param linesOfFiles
      * Divide lines to DateTime, ServerName and Transactions IDs and save DateTime and Transactions IDs into treeMap
      * @return treeMap which contains time as a key and all transactions for this time(each day) as a value
      */
-    public static TreeMap <LocalDate, String> combineTransactionsOfDay (List <String> linesWithTransactionsID) throws ParseException {
+    public static TreeMap <LocalDate, String> combineTransactionsOfDay (List <String> linesOfFiles) throws ParseException {
 
         TreeMap <LocalDate, String> timeAndTransactions = new TreeMap<>();
 
-        for (String line : linesWithTransactionsID) {
-
-            // Spliting each line of list by regex for getting two parts:
-            // part1 = DateTime with ServerName;
-            // part2 = transactionsIDs only
-            String[] parts = line.split(":  ");
-            String timeWithServerName = parts[0];
-            String transactionsIDs = parts[1];
-
+        for (String line : linesOfFiles) {
             //regex to check DateTime and ServerName
-            String regex = "([a-zA-z]{3}\\s{2}\\d{1,2})(\\s{1}\\d{2}:\\d{2}:\\d{2})(\\s*(\\w*-)*\\w*\\s*\\w*)";
+            //where ([a-zA-z]{3}\s{2}\d{1,2}) saves date (Month + Day)
+            // (?:\s{1}\d{2}:\d{2}:\d{2}) doesn't save time
+            // (\s*(?:\w*-)*\w*\s*\w*) doesn't save server name
+            // (.*) saves TransactionsID since they go after ':  '
+            String regex = "([a-zA-z]{3}\\s{2}\\d{1,2})(?:\\s{1}\\d{2}:\\d{2}:\\d{2})(?:\\s*(?:\\w*-)*\\w*\\s*\\w*):\\s{2}(.*)";
             Pattern p = Pattern.compile(regex);
-            Matcher m = p.matcher(timeWithServerName);
+            Matcher m = p.matcher(line);
             m.find();
+            if (m.matches()) {
 
-            String date = m.group(1); // saving only Date
-            String datePlusYear = date + " 2018"; //adding year, must be to work with LocalDate
+                String date = m.group(1); // saving only Date
+                String datePlusYear = date + " 2018"; //adding year, must be to work with LocalDate
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM  d yyyy");
-            LocalDate dateEvery = LocalDate.parse(datePlusYear, formatter);
+                String transactionsIDs = m.group(2);
 
-            //adding values to treemap with unique key, concat value if needed
-            if(timeAndTransactions.containsKey(dateEvery)) {
-                transactionsIDs = timeAndTransactions.get(dateEvery) + "," + transactionsIDs;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM  d yyyy");
+                LocalDate dateEvery = LocalDate.parse(datePlusYear, formatter);
+
+                //adding values to treemap with unique key, concat value if needed
+                if (timeAndTransactions.containsKey(dateEvery)) {
+                    transactionsIDs = timeAndTransactions.get(dateEvery) + "," + transactionsIDs;
+                }
+                timeAndTransactions.put(dateEvery, transactionsIDs);
             }
-            timeAndTransactions.put(dateEvery, transactionsIDs);
         }
         return new TreeMap<>(timeAndTransactions);
     }
