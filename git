@@ -1,22 +1,31 @@
-git init / git clone link
+git config --global user.name "Same Smith"
+git config --global user.email sam@example.com
+git init
+git clone link
 git show - содержимое коммита
 git diff
-git log
+git log shows the commit logs
 gitk
 
-git checkout
-git branch
+git remote add origin - connect to remote
+git remote -v - list of remotes
+
+git checkout -b <branchname> - create brunch
+git branch - list of branches
+git checkout <branchname> - switch to <branchname>
+git push -u origin <branchname>
 
 git diff master(между текущей веткой и мастером)
 
-git checkout master - go to maset
 
 git merge branchName - merge current branch with branchName
 
 git fetch
 
-git stash
+git stash - do not save your changes and go to another commit
 
-git stash apply
+git stash apply - go back to your changes
 
 git blame nameOfFile
+
+wq
