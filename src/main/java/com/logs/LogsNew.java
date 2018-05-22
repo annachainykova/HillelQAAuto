@@ -76,6 +76,7 @@ public class LogsNew {
         for (String line : linesOfFiles) {
             //regex to check DateTime and ServerName
             //where ([a-zA-z]{3}\s{2}\d{1,2}) saves date (Month + Day)
+            // (?:.*):\s{2} everything between date and transaction IDs, including ':  '
             // (.*) saves TransactionsID since they go after ':  '
             String regex = "([a-zA-z]{3}\\s{2}\\d{1,2})(?:.*):\\s{2}(.*)";
             Pattern p = Pattern.compile(regex);

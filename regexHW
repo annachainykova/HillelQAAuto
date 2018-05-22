@@ -1,0 +1,74 @@
+Some text which contains few 's' letters. The last one should be deleted by regex.
+
+Some text which contains few 's' letters. The last one should be deleted by regex.
+Some text which contains few 's' letters. The last one should be deleted by regex.
+Some text which contains few 's' letters. The last one should be deleted by regex.
+
+
+This regex = (?i)(.*)s should be replaced to this expression = $1
+
+
+
+
+
+
+
+
+
+Some String which contain valid email adresses, should be check whether all addresses are located on 'gmail.com'. All addresses are divided by ,
+
+public class HWregex {
+    public static void main(String[] args) throws IOException {
+        String path = "C:\\Users\\anya_\\IdeaProjects\\lesson5\\src\\myTestFile.txt"; //some path to file
+        String split = ",";
+        String domain = "@gmail.com";
+        if(isValidEmail(divideStringToPartsBy(fileToString(path), split))) {
+            if(isEveryEmailBelongsToDomain(divideStringToPartsBy(fileToString(path), regex), domain)) {
+                System.out.println("All emails belongs to proper domains");
+            } else {
+                System.out.println("There are emails on other domain");
+            }
+        } else {
+            System.out.println("At least one of email is not valid. Please check entered data. ");
+        }
+
+    }
+
+    public static String fileToString(String path) throws IOException {
+        return new String(Files.readAllBytes(Paths.get(path)));
+    }
+
+
+    public static HashSet<String> divideStringToPartsBy(String test, String regex) {
+        return new HashSet(Arrays.asList(test.split(regex)));
+    }
+
+ public static boolean isEveryEmailBelongsToDomain (HashSet<String> set, String domain) {
+        int count = 0;
+        Pattern p2 = Pattern.compile(domain);
+        for (String text : set) {
+            Matcher matcher = p2.matcher(text);
+            if (matcher.find()) {
+                count++;
+            }
+        }
+        if (count == set.size()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+  public static boolean isValidEmail(HashSet<String> set) {
+        String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$"; //здесь бы мог быть не копипаст, а какой-то красивый regex ;)
+        Pattern ptr = Pattern.compile(emailRegex);
+        for (String email : set) {
+            Matcher matcher = ptr.matcher(email);
+            if(!matcher.find()){
+                //System.out.println(email);
+                return false;
+            }
+        }
+        return true;
+    }
+}
