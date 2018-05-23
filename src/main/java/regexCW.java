@@ -8,43 +8,47 @@ import java.util.regex.Pattern;
 
 public class regexCW {
     public static void main(String[] args) throws IOException {
-        String path = "Logs.txt";
+        String pathToFile = "Logs.txt";
         ArrayList<String> neededInfo = new ArrayList<>(); //what info from activity we are looking for
         neededInfo.add("Login Username:");
-        neededInfo.add("Data Object");
+        neededInfo.add("Data Object:");
+        neededInfo.add("User Action:");
 
-        cleanLogs(fileToString(path), neededInfo );
+        cleanLogs(fileToArrayList(pathToFile), neededInfo );
     }
 
 
-
-    public static ArrayList<String> fileToString(String path) throws IOException {
+    public static ArrayList<String> fileToArrayList(String path) throws IOException {
         return new ArrayList(Files.readAllLines(Paths.get(path)));
     }
 
 
     public static void cleanLogs(ArrayList<String> logs, ArrayList<String> neededInfo) {
         for (String log : logs) {
-           Pattern pattern = Pattern.compile("([a-zA-z]{3}\\s{2}\\d{1,2} \\d{2}:\\d{2}:\\d)(?:.*)( Activity: (.)*)]");
+            // pattern where (^.+? )[a-z]+ saves everything before first letter(which is the start of serverName)
+            // everything means Date and full time
+            // .* - any info before Activity block
+            // (Activity: .*)] saves what activity block contains and check whether there is ] char in the end
+           Pattern pattern = Pattern.compile("(^.+? )[a-z]+.*(Activity: .*)]");
            Matcher m = pattern.matcher(log);
+
            if(m.find()) {
-               String news = m.group(2);
                ArrayList<String> allNeededInfo = new ArrayList<>();
 
                for (String info : neededInfo) {
-
-                   Pattern newPattern = Pattern.compile("(\\[" + info + ".*?\\])");
-                   Matcher newMatched = newPattern.matcher(news);
+                   Pattern showsNull = Pattern.compile("(\\[" + info + " .+?\\])");
+                   //  showsNull shows all data even if it is Empty, e.g. [Data Object: ]
+                   Pattern notShowsNull = Pattern.compile("(\\[" + info + " [^\\]]+?\\])");
+                   // notShowsNull shows data only if there is some info, e.g. [Data Object: Files]
+                   Matcher newMatched = notShowsNull.matcher(m.group(2));
                    if (newMatched.find()) {
                        allNeededInfo.add(newMatched.group(1));
                    }
                }
-               String infoArrayIntoString = String.join(", ", allNeededInfo);
-               System.out.println(m.group(1) + " Activity: " + infoArrayIntoString);
+               System.out.println(m.group(1) + " Activity: " + String.join(", ", allNeededInfo));
            }
 
        }
-
-
+       
     }
 }
