@@ -25,10 +25,10 @@ public class regexCW {
 
     public static void cleanLogs(ArrayList<String> logs, ArrayList<String> neededInfo) {
         for (String log : logs) {
-            // pattern where (^.+? )[a-z]+ saves everything before first letter(which is the start of serverName)
+            // pattern where (^.+? )[a-z]+ saves everything before first letter(which is the first letter of serverName)
             // everything means Date and full time
             // .* - any info before Activity block
-            // (Activity: .*)] saves what activity block contains and check whether there is ] char in the end
+            // (Activity: .*)] saves what activity block contains and checks whether there is ] char in the end
            Pattern pattern = Pattern.compile("(^.+? )[a-z]+.*(Activity: .*)]");
            Matcher m = pattern.matcher(log);
 
@@ -49,6 +49,6 @@ public class regexCW {
            }
 
        }
-       
+
     }
 }
