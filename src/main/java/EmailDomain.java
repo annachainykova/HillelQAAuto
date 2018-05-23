@@ -1,18 +1,15 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegexHW {
-    public static void main(String[] args) throws IOException {
-        String path = "fileForRegex"; //some path to file
-        String split = ",";
+public class EmailDomain {
+    public static void main(String[] args){
+        String toCheck = "email1@gmai89l.com,email2@gmail.com,email3@gmail.com";
         String domain = "@gmail.com";
-        if(isValidEmail(divideStringToPartsBy(fileToString(path), split))) {
-            if(isEveryEmailBelongsToDomain(divideStringToPartsBy(fileToString(path), split), domain)) {
+        if(isValidEmail(divideString(toCheck))) {
+            if(isEveryEmailBelongsToDomain(divideString(toCheck), domain)) {
                 System.out.println("All emails belongs to proper domains");
             } else {
                 System.out.println("There are emails on other domain");
@@ -23,13 +20,9 @@ public class RegexHW {
 
     }
 
-    public static String fileToString(String path) throws IOException {
-        return new String(Files.readAllBytes(Paths.get(path)));
-    }
 
-
-    public static HashSet<String> divideStringToPartsBy(String test, String regex) {
-        return new HashSet(Arrays.asList(test.split(regex)));
+    public static HashSet<String> divideString(String test) {
+        return new HashSet(Arrays.asList(test.split(",")));
     }
 
     public static boolean isEveryEmailBelongsToDomain (HashSet<String> set, String domain) {
@@ -49,15 +42,16 @@ public class RegexHW {
     }
 
     public static boolean isValidEmail(HashSet<String> set) {
-        String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$"; //здесь бы мог быть не копипаст, а какой-то красивый regex ;)
+        String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+        
         Pattern ptr = Pattern.compile(emailRegex);
         for (String email : set) {
             Matcher matcher = ptr.matcher(email);
             if(!matcher.find()){
-                //System.out.println(email);
                 return false;
             }
         }
         return true;
     }
+
 }
