@@ -27,7 +27,7 @@ public class AppTest {
 
     @BeforeTest
     public void openChrome()  throws InterruptedException {
-        System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "E:\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
     }
