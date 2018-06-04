@@ -11,6 +11,8 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import static org.openqa.selenium.Keys.ENTER;
+
 public class AppTest {
     private static WebDriver driver;
 
@@ -27,13 +29,14 @@ public class AppTest {
 
     @BeforeTest
     public void openChrome()  throws InterruptedException {
-        System.setProperty("webdriver.chrome.driver", "E:\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
     }
 
 
-    @Test (dataProvider = "emailAndPasswordPositive")
+    @Test
+            //(dataProvider = "emailAndPasswordPositive")
     public void logInTestPositive(String email, String password) {
         driver.get("http://jira.hillel.it:8080/login.jsp?");
         fill(By.cssSelector("input[name=os_username]"), email);
@@ -42,7 +45,7 @@ public class AppTest {
         Assert.assertTrue(driver.findElements(By.cssSelector("a[data-username='" + email + "']")).size()>0);
     }
 
-    @Test (dataProvider = "emailAndPasswordPositive")
+    @Test (dataProvider = "emailAndPasswordNegative")
     public void logInTestNegative(String email, String password) {
         driver.get("http://jira.hillel.it:8080/login.jsp?");
         fill(By.cssSelector("input[name=os_username]"), email);
@@ -52,13 +55,26 @@ public class AppTest {
     }
 
 
+    @Test
+    public void createTicket() throws InterruptedException {
+        logInTestPositive("a.chainikova", "SarbonaRosta" );
+        Thread.sleep(5000);
+        driver.findElement(By.cssSelector("a[id=create_link]")).click();
+        Thread.sleep(5000);
+        driver.findElement(By.cssSelector("input[id=project-field]")).click();
+        fill(By.cssSelector("input[id=project-field]"), "GQR").submit();
+        Thread.sleep(5000);
+        //driver.findElement(By.cssSelector("input[id=project-field]")).sendKeys("GQR");
+        //driver.findElement(By.cssSelector("input[id=summary]")).click();
+        fill(By.cssSelector("input[id=summary]"), "This is the test ticket").submit();
+        driver.findElement(By.cssSelector("input[id=create-issue-submit]")).click();
+    }
 
 
-//
-//    @AfterTest
-//    public void closeChrome() {
-//        driver.close();
-//    }
+
+
+
+
 
 
     private static WebElement fill(By selector, String data) {
