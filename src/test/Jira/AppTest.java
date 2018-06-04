@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.FindBy;
+import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
@@ -15,32 +16,49 @@ public class AppTest {
 
 
     @DataProvider
-    public static Object[][] emailAndPassword() {
-        return new Object[][] { { "a.chainikova@gmail.com", "SarbonaRosta" }, { "leonid.haidanov@gmail.com", "kbfybn7323" }, };
+    public static Object[][] emailAndPasswordPositive() {
+        return new Object[][] { { "a.chainikova", "SarbonaRosta" }, { "leonid.haidanov", "kbfybn7323" }, };
+    }
+
+    @DataProvider
+    public static Object[][] emailAndPasswordNegative() {
+        return new Object[][] { { "a.chainikova", "1111" }, { "leonid.haidanov1", "kbfybn7323" }, };
     }
 
     @BeforeTest
     public void openChrome()  throws InterruptedException {
         System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
         driver = new ChromeDriver();
+        driver.manage().window().maximize();
     }
 
 
-    @Test (dataProvider = "emailAndPassword")
-    public void logInTest(String email, String password) {
+    @Test (dataProvider = "emailAndPasswordPositive")
+    public void logInTestPositive(String email, String password) {
         driver.get("http://jira.hillel.it:8080/login.jsp?");
-        fill(By.cssSelector("input[id=os_username]"), email);
-        fill(By.cssSelector("input[id=os_password]"), password).submit();
+        fill(By.cssSelector("input[name=os_username]"), email);
+        fill(By.cssSelector("input[name=os_password]"), password).submit();
+
+        Assert.assertTrue(driver.findElements(By.cssSelector("a[data-username='" + email + "']")).size()>0);
+    }
+
+    @Test (dataProvider = "emailAndPasswordPositive")
+    public void logInTestNegative(String email, String password) {
+        driver.get("http://jira.hillel.it:8080/login.jsp?");
+        fill(By.cssSelector("input[name=os_username]"), email);
+        fill(By.cssSelector("input[name=os_password]"), password).submit();
+
+        Assert.assertFalse(driver.findElements(By.cssSelector("a[data-username='" + email + "']")).size()>0);
     }
 
 
-    @Test (dataProvider = "")
 
 
-    @AfterTest
-    public void closeChrome() {
-        driver.quit();
-    }
+//
+//    @AfterTest
+//    public void closeChrome() {
+//        driver.close();
+//    }
 
 
     private static WebElement fill(By selector, String data) {

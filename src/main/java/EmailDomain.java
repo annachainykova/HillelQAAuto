@@ -6,17 +6,19 @@ import java.util.regex.Pattern;
 
 public class EmailDomain {
     public static void main(String[] args){
-        String toCheck = "email1@gmai89l.com,email2@gmail.com,email3@gmail.com";
-        String domain = "@gmail.com";
-        if(isValidEmail(divideString(toCheck))) {
-            if(isEveryEmailBelongsToDomain(divideString(toCheck), domain)) {
-                System.out.println("All emails belongs to proper domains");
-            } else {
-                System.out.println("There are emails on other domain");
-            }
-        } else {
-            System.out.println("At least one of email is not valid. Please check entered data. ");
-        }
+//        String toCheck = "email1@gmai89l.com,email2@gmail.com,email3@gmail.com";
+//        String domain = "@gmail.com";
+//        if(isValidEmail(divideString(toCheck))) {
+//            if(isEveryEmailBelongsToDomain(divideString(toCheck), domain)) {
+//                System.out.println("All emails belongs to proper domains");
+//            } else {
+//                System.out.println("There are emails on other domain");
+//            }
+//        } else {
+//            System.out.println("At least one of email is not valid. Please check entered data. ");
+//        }
+        isGmailTest1();
+        isGmailTest2();
 
     }
 
@@ -52,6 +54,30 @@ public class EmailDomain {
             }
         }
         return true;
+    }
+
+
+    public static boolean isGmail(String input) {
+        return Pattern.matches("^(?i)(?:(?:[^@]+@gmail\\.com)(?:,|$))+$", input);
+    }
+
+
+    public static void isGmailTest1() {
+        String email = "abc@gmail.com";
+        if(isGmail(email)) {
+            System.out.println("Test succeeded");
+        } else {
+            System.out.println("Test failed");
+        }
+    }
+
+    public static void isGmailTest2() {
+        String email = "abc@notgmail.com";
+        if(!isGmail(email)) {
+            System.out.println("Test succeeded");
+        } else {
+            System.out.println("Test failed");
+        }
     }
 
 }
