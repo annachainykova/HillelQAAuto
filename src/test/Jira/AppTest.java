@@ -32,7 +32,7 @@ public class AppTest {
 
     @BeforeTest
     public void openChrome() {
-        System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "E:\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.get("http://jira.hillel.it:8080/login.jsp?");
@@ -42,18 +42,18 @@ public class AppTest {
     public void closeChrome() {
         driver.quit();
     }
-    @Test
-    public void logInTestPositive() {
-        clearAndFill(By.cssSelector("input[name=os_username]"), username);
-        clearAndFill(By.cssSelector("input[name=os_password]"), password).submit();
-        Assert.assertTrue(driver.findElements(By.cssSelector("a[data-username='" + username + "']")).size()>0);
-    }
-
-    @Test
+    @Test (priority = 0)
     public void logInTestNegative() {
         clearAndFill(By.cssSelector("input[name=os_username]"), username);
         clearAndFill(By.cssSelector("input[name=os_password]"), password+1).submit();
         Assert.assertEquals (driver.findElement(By.className("aui-message")).getText(), errorLoginMessage);
+    }
+
+    @Test (priority = 1)
+    public void logInTestPositive() {
+        clearAndFill(By.cssSelector("input[name=os_username]"), username);
+        clearAndFill(By.cssSelector("input[name=os_password]"), password).submit();
+        Assert.assertTrue(driver.findElements(By.cssSelector("a[data-username='" + username + "']")).size()>0);
     }
 
 
@@ -61,7 +61,7 @@ public class AppTest {
     public void createIssue() throws InterruptedException {
         driver.findElement(By.cssSelector("a[id=create_link]")).click();
         Thread.sleep(5000);
-        clearAndFill(By.cssSelector("input[id=project-field]"), "GQR").submit();
+        clearAndFill(By.cssSelector("input[id=project-field]"), "GQR" +"\n");
         Thread.sleep(5000);
         clearAndFill(By.cssSelector("input[id=summary]"), summary).submit();
         Thread.sleep(2000);
