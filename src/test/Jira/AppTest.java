@@ -20,16 +20,6 @@ public class AppTest {
     private String errorLoginMessage = "Sorry, your username and password are incorrect - please try again.";
     private String path;
 
-    @DataProvider
-    public static Object[][] emailAndPasswordPositive() {
-        return new Object[][] { { "a.chainikova", "SarbonaRosta" }, { "leonid.haidanov", "kbfybn7323" }, };
-    }
-
-    @DataProvider
-    public static Object[][] emailAndPasswordNegative() {
-        return new Object[][] { { "a.chainikova", "1111" }, { "leonid.haidanov1", "kbfybn7323" }, };
-    }
-
     @BeforeTest
     public void openChrome() {
         System.setProperty("webdriver.chrome.driver", "E:\\chromedriver.exe");
@@ -57,7 +47,7 @@ public class AppTest {
     }
 
 
-    @Test (dependsOnMethods = "logInTestPositive")
+    @Test (priority = 2)
     public void createIssue() throws InterruptedException {
         driver.findElement(By.cssSelector("a[id=create_link]")).click();
         Thread.sleep(5000);
@@ -72,7 +62,7 @@ public class AppTest {
         // <a class="issue-created-key issue-link" data-issue-key="GQR-891" href="/browse/GQR-891">GQR-891 - Test issue</a>
     }
 
-    @Test (dependsOnMethods = {"logInTestPositive", "createIssue"})
+    @Test (priority = 3)
     public void openIssue() {
         driver.get(path);
         Assert.assertTrue(driver.getTitle().contains(summary));
