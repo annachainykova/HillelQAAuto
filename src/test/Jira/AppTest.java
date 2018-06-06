@@ -39,6 +39,9 @@ public class AppTest {
         Assert.assertEquals (driver.findElement(By.className("aui-message")).getText(), errorLoginMessage);
     }
 
+
+//    Test
+//    Test
     @Test (priority = 1)
     public void logInTestPositive() {
         clearAndFill(By.cssSelector("input[name=os_username]"), username);
