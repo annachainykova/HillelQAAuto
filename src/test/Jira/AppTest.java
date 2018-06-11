@@ -22,31 +22,29 @@ public class AppTest {
 
     @BeforeTest
     public void openChrome() {
-        System.setProperty("webdriver.chrome.driver", "E:\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.get("http://jira.hillel.it:8080/login.jsp?");
     }
 
-    @AfterTest
-    public void closeChrome() {
-        driver.quit();
-    }
-    @Test (priority = 0)
-    public void logInTestNegative() {
-        clearAndFill(By.cssSelector("input[name=os_username]"), username);
-        clearAndFill(By.cssSelector("input[name=os_password]"), password+1).submit();
-        Assert.assertEquals (driver.findElement(By.className("aui-message")).getText(), errorLoginMessage);
-    }
+//    @AfterTest
+//    public void closeChrome() {
+//        driver.quit();
+//    }
+//    @Test (priority = 0)
+//    public void logInTestNegative() {
+//        clearAndFill(By.cssSelector("input[name=os_username]"), username);
+//        clearAndFill(By.cssSelector("input[name=os_password]"), password+1).submit();
+//        Assert.assertEquals (driver.findElement(By.className("aui-message")).getText(), errorLoginMessage);
+//    }
 
-
-//    Test
-//    Test
     @Test (priority = 1)
     public void logInTestPositive() {
         clearAndFill(By.cssSelector("input[name=os_username]"), username);
         clearAndFill(By.cssSelector("input[name=os_password]"), password).submit();
         Assert.assertTrue(driver.findElements(By.cssSelector("a[data-username='" + username + "']")).size()>0);
+//        driver.get("http://jira.hillel.it:8080/browse/GQR-939"); // just for tests
     }
 
 
@@ -70,6 +68,14 @@ public class AppTest {
         driver.get(path);
         Assert.assertTrue(driver.getTitle().contains(summary));
     }
+
+    @Test (priority = 4)
+    public void attachFile() throws InterruptedException {
+//        driver.findElement(By.cssSelector("a[id=opsbar-operations_more]")).click();
+        driver.findElement(By.cssSelector("button [class=issue-drop-zone__button]")).sendKeys("C:\\Users\\test.png");
+
+    }
+
 
     private static WebElement clearAndFill(By selector, String data) {
         WebElement element = driver.findElement(selector);
