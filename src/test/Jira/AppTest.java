@@ -27,7 +27,9 @@ public class AppTest {
 
     @BeforeTest
     public void openChrome() {
+
         System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
+
         driver = new ChromeDriver();
         wait = new WebDriverWait(driver, 10);
         driver.manage().window().maximize();
@@ -51,6 +53,7 @@ public class AppTest {
         clearAndFill(By.cssSelector("input[name=os_username]"), username);
         clearAndFill(By.cssSelector("input[name=os_password]"), password).submit();
         Assert.assertTrue(driver.findElements(By.cssSelector("a[data-username='" + username + "']")).size()>0);
+//        driver.get("http://jira.hillel.it:8080/browse/GQR-939"); // just for tests
     }
 
 
@@ -74,6 +77,7 @@ public class AppTest {
         driver.get(ticketPath);
         Assert.assertTrue(driver.getTitle().contains(summary));
     }
+
 
 
     @Test(dependsOnMethods = "logInTestPositive")
@@ -106,6 +110,14 @@ public class AppTest {
 
 
     }
+
+//    @Test (priority = 4)
+//    public void attachFile() throws InterruptedException {
+////        driver.findElement(By.cssSelector("a[id=opsbar-operations_more]")).click();
+//        driver.findElement(By.cssSelector("button [class=issue-drop-zone__button]")).sendKeys("C:\\Users\\test.png");
+//
+//    }
+
 
 
     private static WebElement clearAndFill(By selector, String data) {
