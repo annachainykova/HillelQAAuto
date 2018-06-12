@@ -28,16 +28,16 @@ public class AppTest {
         driver.get("http://jira.hillel.it:8080/login.jsp?");
     }
 
-//    @AfterTest
-//    public void closeChrome() {
-//        driver.quit();
-//    }
-//    @Test (priority = 0)
-//    public void logInTestNegative() {
-//        clearAndFill(By.cssSelector("input[name=os_username]"), username);
-//        clearAndFill(By.cssSelector("input[name=os_password]"), password+1).submit();
-//        Assert.assertEquals (driver.findElement(By.className("aui-message")).getText(), errorLoginMessage);
-//    }
+    @AfterTest
+    public void closeChrome() {
+        driver.quit();
+    }
+    @Test (priority = 0)
+    public void logInTestNegative() {
+        clearAndFill(By.cssSelector("input[name=os_username]"), username);
+        clearAndFill(By.cssSelector("input[name=os_password]"), password+1).submit();
+        Assert.assertEquals (driver.findElement(By.className("aui-message")).getText(), errorLoginMessage);
+    }
 
     @Test (priority = 1)
     public void logInTestPositive() {
@@ -69,12 +69,12 @@ public class AppTest {
         Assert.assertTrue(driver.getTitle().contains(summary));
     }
 
-    @Test (priority = 4)
-    public void attachFile() throws InterruptedException {
-//        driver.findElement(By.cssSelector("a[id=opsbar-operations_more]")).click();
-        driver.findElement(By.cssSelector("button [class=issue-drop-zone__button]")).sendKeys("C:\\Users\\test.png");
-
-    }
+//    @Test (priority = 4)
+//    public void attachFile() throws InterruptedException {
+////        driver.findElement(By.cssSelector("a[id=opsbar-operations_more]")).click();
+//        driver.findElement(By.cssSelector("button [class=issue-drop-zone__button]")).sendKeys("C:\\Users\\test.png");
+//
+//    }
 
 
     private static WebElement clearAndFill(By selector, String data) {
